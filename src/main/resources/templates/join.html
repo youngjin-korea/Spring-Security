@@ -1,15 +1,23 @@
-<html lang="en">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Document</title>
+  <title>회원가입</title>
+  <style>.field-error { color: red; font-size: 0.8em; }</style>
 </head>
 <body>
-join page
-<form action="/join" method="post">
-  <input type="text" name="username" required>
-  <input type="password" name="password" required>
-  <button type="submit">join</button>
+<h2>회원가입</h2>
+<form th:action="@{/join}" th:object="${userRequestDTO}" method="post">
+  <div>
+    <label>아이디</label>
+    <input type="text" th:field="*{username}" placeholder="4~20자 입력">
+    <div class="field-error" th:errors="*{username}">아이디 에러</div>
+  </div>
+  <div>
+    <label>비밀번호</label>
+    <input type="password" th:field="*{password}">
+    <div class="field-error" th:errors="*{password}">비밀번호 에러</div>
+  </div>
+  <button type="submit">가입하기</button>
 </form>
 </body>
 </html>

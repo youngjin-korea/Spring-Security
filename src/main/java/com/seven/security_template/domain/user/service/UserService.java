@@ -4,9 +4,11 @@ import com.seven.security_template.domain.user.dto.UserRequestDTO;
 import com.seven.security_template.domain.user.entity.UserEntity;
 import com.seven.security_template.domain.user.entity.UserRole;
 import com.seven.security_template.domain.user.repository.UserRepository;
+import com.seven.security_template.global.error.BusinessException; // 아까 만든 커스텀 예외
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -15,15 +17,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // TODO:: 디테일을 추가하시려면 : 이미 동일한 username이 존재하는지 체크, 성공 여부에 따른 return 값 추가
+    @Transactional
     public void join(UserRequestDTO dto) {
-        String username = dto.getUsername();
-        String password = dto.getPassword();
+        // 1. 아이디 중복 체크
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new BusinessException("이미 존재하는 아이디입니다.");
+        }
 
+        // 2. 엔티티 변환 및 저장
         UserEntity entity = UserEntity.builder()
-                .username(username)
-                .password(passwordEncoder.encode(password))
-                .role(UserRole.USER).build();
+                .username(dto.getUsername())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .role(UserRole.USER) // 기본 권한 부여
+                .build();
 
         userRepository.save(entity);
     }
