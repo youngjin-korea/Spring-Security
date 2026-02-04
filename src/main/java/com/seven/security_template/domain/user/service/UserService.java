@@ -6,6 +6,7 @@ import com.seven.security_template.domain.user.entity.UserRole;
 import com.seven.security_template.domain.user.repository.UserRepository;
 import com.seven.security_template.global.error.BusinessException; // 아까 만든 커스텀 예외
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +21,14 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    /* TODO :: [권한 검사 메소드] - 게시글 삭제시 USER 권한을 가진 유저가 요청을 보낼수 있음(SecurityConfig에서 필터단의 처리) + 본인의 게시글만 지울수 있음(컨트롤러쪽 인가)
+    public boolean authCheck(Long postId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // select 1 from userTable u join 게시글 테이블 p on u.id = p.userId;
+        return postRepository.existsIdAndUsernameCustom(postId, username);
+    }
+*/
 
     // 이 메소드를 구현해두면, AuthenticationProvider가 알아서 불러서 사용 함.
     @Override
