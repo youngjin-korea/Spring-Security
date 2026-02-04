@@ -24,6 +24,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable());
 
+        // 로그인 필터 설정
+        http
+                .formLogin(login -> login
+                        .loginPage("/login") // login page GET uri
+                        .loginProcessingUrl("/login")); // login POST 요청 -> Authentication Manager -> Authentication Provider
+
         // 최종 빌드
         return http.build();
     }
