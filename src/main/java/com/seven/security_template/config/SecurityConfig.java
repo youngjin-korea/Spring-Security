@@ -3,6 +3,7 @@ package com.seven.security_template.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,26 +23,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        // 수많은 필터 중 CSRF 필터를 disable 시킴
+        // 수많은 필터 중 CSRF 필터를 disable 시킴(세션 로그인 경우 CSRF 공격을 방어하기 위해 활성화 필요)
         http
-                .csrf(csrf -> csrf.disable());
+                .csrf(Customizer.withDefaults());
 
         // 로그인 필터 설정
         http
                 .formLogin(login -> login
                         .loginPage("/login") // login page GET uri
-                        .loginProcessingUrl("/login")); // login POST 요청 -> Authentication Manager -> Authentication Provider
+                        .loginProcessingUrl(
+                                "/login")); // login POST 요청 -> Authentication Manager -> Authentication Provider
 
         // 인가 필터 설정
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/join").permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/join").permitAll()
+                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/admin").hasRole("ADMIN")
 //                        .requestMatchers(HttpMethod.GET, "/").permitAll() // 메소드 별 권한 나누기
-                        .anyRequest().hasRole("ADMIN")
+                                .anyRequest().hasRole("ADMIN")
                 );
 
         // 최종 빌드
